@@ -2,8 +2,9 @@ export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 
-enum QuestionType {
+export enum QuestionType {
   select = "select",
+  textArea = "textArea",
 }
 interface Response {
   value: string;
@@ -14,14 +15,23 @@ export interface Actions {
   [key: string]: string; // TODO: type substring here
 }
 
-export interface Question {
+interface SelectQuestion {
   id: string;
   reference: string;
   text: string;
-  selectedActions: Actions;
+  responseValueActions: Actions;
   questionType: QuestionType.select;
   responses: Response[];
 }
+interface TextQuestion {
+  id: string;
+  reference: string;
+  text: string;
+  questionType: QuestionType.textArea;
+  responseValueActions: Actions;
+}
+
+export type Question = SelectQuestion | TextQuestion;
 export interface AssessmentFormData {
   metadata: {
     version: string;
@@ -47,7 +57,7 @@ const formData: AssessmentFormData[] = [
         reference: "",
         text: "What sex were you assigned at birth?",
         questionType: QuestionType.select,
-        selectedActions: {
+        responseValueActions: {
           default: "showQuestion:Q1.1",
         },
         responses: [
@@ -60,7 +70,7 @@ const formData: AssessmentFormData[] = [
         reference: "",
         text: "Are you pregnant, breastfeeding or trying to conceive (now or in the near future)?",
         questionType: QuestionType.select,
-        selectedActions: {
+        responseValueActions: {
           none: "showQuestion:Q2",
           pregnant: "block",
           breastfeeding: "block",
@@ -78,13 +88,64 @@ const formData: AssessmentFormData[] = [
         reference: "",
         text: "Are you aged between 18 - 74?",
         questionType: QuestionType.select,
-        selectedActions: {
+        responseValueActions: {
           yes: "showQuestion:Q3",
           no: "block",
         },
         responses: [
           { value: "yes", label: "Yes" },
           { value: "no", label: "No" },
+        ],
+      },
+      Q3: {
+        id: "Q3",
+        reference: "",
+        text: "What is your height?",
+        questionType: QuestionType.textArea,
+        responseValueActions: {
+          default: "showQuestion:Q4",
+        },
+      },
+      Q4: {
+        id: "Q4",
+        reference: "",
+        text: "What is your current weight? (It's really important you give us an accurate up-to-date measurement)",
+        questionType: QuestionType.textArea,
+        responseValueActions: {
+          default: "showQuestion:Q5",
+        },
+      },
+      Q5: {
+        id: "Q5",
+        reference: "",
+        text: "What is your ethnicity? (This will help our prescribers gain a better idea about your risk in relation to your weight)",
+        questionType: QuestionType.select,
+        responseValueActions: {
+          bangladeshi: "highlight:H1",
+          blackAfrican: "highlight:H1",
+          blackCaribbean: "highlight:H1",
+          chinese: "highlight:H1",
+          indian: "highlight:H1",
+          middleEastern: "highlight:H1",
+          mixed: "highlight:H1",
+          pakistani: "highlight:H1",
+          other: "highlight:H1",
+          yes: "showQuestion:Q3",
+          no: "block",
+        },
+        responses: [
+          { value: "bangladeshi", label: "Bangladeshi" },
+          { value: "blackAfrican", label: "Black African" },
+          { value: "blackCaribbean", label: "Black Caribbean" },
+          { value: "chinese", label: "Chinese" },
+          { value: "indian", label: "Indian" },
+          { value: "middleEastern", label: "Middle Eastern" },
+          { value: "mixed", label: "Mixed" },
+          { value: "pakistani", label: "Pakistani" },
+          { value: "other", label: "Other (free text)" },
+
+          { value: "white", label: "White" },
+          { value: "none", label: "I do not wish to answer" },
         ],
       },
     },

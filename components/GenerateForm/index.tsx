@@ -1,6 +1,11 @@
 "use client";
 
-import { Actions, AssessmentFormData, Question } from "@/app/api/forms/route";
+import {
+  Actions,
+  AssessmentFormData,
+  Question,
+  QuestionType,
+} from "@/app/api/forms/route";
 import { useState } from "react";
 import styles from "./index.module.css";
 import { useRouter } from "next/router";
@@ -41,9 +46,13 @@ export function GenerateForm({ formData }: Props) {
   const { questions } = formData;
   const question = questions[currentQuestionId];
 
+  if (!question) {
+    alert("no question data found for " + currentQuestionId);
+  }
+
   const handleSelection = (selectedValue: string = "default") => {
     const [action, target] = determineAction(
-      question.selectedActions,
+      question.responseValueActions,
       selectedValue
     );
 
@@ -58,34 +67,45 @@ export function GenerateForm({ formData }: Props) {
       default:
         throw new Error("no action handler implemented");
     }
-    // console.log("whats dis?", action, target);
   };
 
   return (
     <form>
-      {Object.values(questions).map(({ id, responses, text }) => {
+      {Object.values(questions).map(({ id, text, ...rest }) => {
         return (
           <div
             key={`question-${id}`}
             className={id !== currentQuestionId ? styles.hide : ""}
           >
             <label htmlFor={id}>{`${id}. ${text}`}</label>
-            <select
-              id={id}
-              defaultValue="placeholder"
-              onChange={(e) => handleSelection(e.target.value)}
-            >
-              <option disabled label="Please select" value="placeholder" />
-              {Object.values(responses).map(({ label, value }) => {
-                return (
-                  <option
-                    key={`response-${id}-${value}`}
-                    value={value}
-                    label={label}
-                  />
-                );
-              })}
-            </select>
+
+            {rest.questionType === QuestionType.select && (
+              <select
+                id={id}
+                defaultValue="placeholder"
+                onChange={(e) => handleSelection(e.target.value)}
+              >
+                <option disabled label="Please select" value="placeholder" />
+                {Object.values(rest.responses).map(({ label, value }) => {
+                  return (
+                    <option
+                      key={`response-${id}-${value}`}
+                      value={value}
+                      label={label}
+                    />
+                  );
+                })}
+              </select>
+            )}
+
+            {rest.questionType === QuestionType.textArea && (
+              <div>
+                <textarea id="dsklfjsdfj" minLength={3} />
+                <button type="button" onClick={() => handleSelection()}>
+                  OK
+                </button>
+              </div>
+            )}
           </div>
         );
       })}
