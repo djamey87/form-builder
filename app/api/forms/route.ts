@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 export enum QuestionType {
   select = "select",
   textArea = "textArea",
+  text = "text",
 }
 interface Response {
   value: string;
@@ -15,6 +16,11 @@ export interface Actions {
   [key: string]: string; // TODO: type substring here
 }
 
+interface GPHighlight {
+  id: string;
+  text: string;
+  action: string;
+}
 interface SelectQuestion {
   id: string;
   reference: string;
@@ -23,11 +29,12 @@ interface SelectQuestion {
   questionType: QuestionType.select;
   responses: Response[];
 }
+
 interface TextQuestion {
   id: string;
   reference: string;
   text: string;
-  questionType: QuestionType.textArea;
+  questionType: QuestionType.textArea | QuestionType.text;
   responseValueActions: Actions;
 }
 
@@ -36,6 +43,9 @@ export interface AssessmentFormData {
   metadata: {
     version: string;
     name: string;
+  };
+  gpHighlights?: {
+    [key: string]: GPHighlight;
   };
   prompts?: {};
   questions: {
@@ -51,6 +61,13 @@ const formData: AssessmentFormData[] = [
       // name: "wegovy-assessment",
       name: "assessment",
     },
+    gpHighlights: {
+      H1: {
+        id: "H1",
+        text: "Consider lower BMI threashold for BAME patients - NICE recommend obese cut off as 27 for South asian/chinese eithnic groups, with limited data on other ethic groups.",
+        action: "showQuestion:Q6",
+      },
+    },
     questions: {
       Q1: {
         id: "Q1",
@@ -58,7 +75,8 @@ const formData: AssessmentFormData[] = [
         text: "What sex were you assigned at birth?",
         questionType: QuestionType.select,
         responseValueActions: {
-          default: "showQuestion:Q1.1",
+          female: "showQuestion:Q1.1",
+          male: "showQuestion:Q2",
         },
         responses: [
           { value: "male", label: "Male" },
@@ -101,7 +119,7 @@ const formData: AssessmentFormData[] = [
         id: "Q3",
         reference: "",
         text: "What is your height?",
-        questionType: QuestionType.textArea,
+        questionType: QuestionType.text,
         responseValueActions: {
           default: "showQuestion:Q4",
         },
@@ -110,7 +128,7 @@ const formData: AssessmentFormData[] = [
         id: "Q4",
         reference: "",
         text: "What is your current weight? (It's really important you give us an accurate up-to-date measurement)",
-        questionType: QuestionType.textArea,
+        questionType: QuestionType.text,
         responseValueActions: {
           default: "showQuestion:Q5",
         },

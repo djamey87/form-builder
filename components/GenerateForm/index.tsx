@@ -17,6 +17,7 @@ interface Props {
 enum SelectedActions {
   showQuestion = "showQuestion",
   showPrompt = "showPrompt",
+  highlight = "highlight",
   block = "block",
 }
 
@@ -39,11 +40,12 @@ function determineAction(
 
 // TODO:
 // [-] track question history
-// [-] only show current question? - might be problematic for returning customers
+// [x] only show current question? - might be problematic for returning customers
+// [-] track state via url - will help with GA tracking (or by section)
 // [-] on selection understand next action (show question / prompt / block / finish)
 export function GenerateForm({ formData }: Props) {
   const [currentQuestionId, setCurrentQuestionId] = useState("Q1");
-  const { questions } = formData;
+  const { questions, gpHighlights } = formData;
   const question = questions[currentQuestionId];
 
   if (!question) {
@@ -64,6 +66,10 @@ export function GenerateForm({ formData }: Props) {
         alert("You shall not pass! - user blocked");
         // reset form?
         break;
+      case SelectedActions.highlight:
+        console.warn("");
+      // TODO: highlight shiz & get next question
+      // setCurrentQuestionId(target);
       default:
         throw new Error("no action handler implemented");
     }
@@ -84,6 +90,7 @@ export function GenerateForm({ formData }: Props) {
                 id={id}
                 defaultValue="placeholder"
                 onChange={(e) => handleSelection(e.target.value)}
+                required
               >
                 <option disabled label="Please select" value="placeholder" />
                 {Object.values(rest.responses).map(({ label, value }) => {
@@ -98,9 +105,9 @@ export function GenerateForm({ formData }: Props) {
               </select>
             )}
 
-            {rest.questionType === QuestionType.textArea && (
+            {rest.questionType === QuestionType.text && (
               <div>
-                <textarea id="dsklfjsdfj" minLength={3} />
+                <input required type="text" id={id} minLength={3} />
                 <button type="button" onClick={() => handleSelection()}>
                   OK
                 </button>
