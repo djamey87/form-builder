@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 
-export enum QuestionType {
+export enum QuestionType { // DONE
   select = "select",
   textArea = "textArea",
   text = "text",
@@ -10,7 +10,6 @@ export enum QuestionType {
 interface Response {
   value: string;
   label: string;
-  onSelect?: { linkId: string };
 }
 export interface Actions {
   [key: string]: string; // TODO: type substring here
