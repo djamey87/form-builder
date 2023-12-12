@@ -11,7 +11,7 @@ export default function NavMenu() {
           <Link href={"/editor"}>Editor</Link>
         </li>
         <li>
-          <Link href={"/form"}>Form</Link>
+          <Link href={"/forms"}>Forms</Link>
         </li>
       </ul>
     </nav>

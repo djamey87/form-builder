@@ -2,16 +2,20 @@
 
 import {
   Actions,
-  AssessmentFormData,
-  Question,
-  QuestionType,
+  // AssessmentFormData,
+  // Question,
+  // QuestionType,
 } from "@/app/api/forms/route";
 import { useState } from "react";
 import styles from "./index.module.css";
-import { useRouter } from "next/router";
+import { Form, Question, QuestionType } from "@prisma/client";
+
+type FormData = Form & {
+  questions: { [key: string]: Question };
+};
 
 interface Props {
-  formData: AssessmentFormData;
+  formData: FormData;
 }
 
 enum SelectedActions {
@@ -45,7 +49,9 @@ function determineAction(
 // [-] on selection understand next action (show question / prompt / block / finish)
 export function GenerateForm({ formData }: Props) {
   const [currentQuestionId, setCurrentQuestionId] = useState("Q1");
-  const { questions, gpHighlights } = formData;
+  // const { questions, gpHighlights } = formData;
+  const { questions } = formData;
+  // const questionsMap = new Set(questions);
   const question = questions[currentQuestionId];
 
   if (!question) {
@@ -85,7 +91,7 @@ export function GenerateForm({ formData }: Props) {
           >
             <label htmlFor={id}>{`${id}. ${text}`}</label>
 
-            {rest.questionType === QuestionType.select && (
+            {rest.questionType === QuestionType.SELECT && (
               <select
                 id={id}
                 defaultValue="placeholder"
@@ -105,7 +111,7 @@ export function GenerateForm({ formData }: Props) {
               </select>
             )}
 
-            {rest.questionType === QuestionType.text && (
+            {rest.questionType === QuestionType.TEXT && (
               <div>
                 <input required type="text" id={id} minLength={3} />
                 <button type="button" onClick={() => handleSelection()}>

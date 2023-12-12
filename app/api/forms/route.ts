@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export enum QuestionType { // DONE
@@ -170,5 +171,9 @@ const formData: AssessmentFormData[] = [
 ];
 
 export async function GET() {
-  return NextResponse.json(formData);
+  const forms = await prisma.form.findMany({
+    include: { metadata: true },
+  });
+
+  return NextResponse.json(forms);
 }
