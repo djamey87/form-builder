@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import Link from "next/link";
 
 export default async function FormsPage() {
   const forms = await prisma.form.findMany({
@@ -16,7 +17,7 @@ export default async function FormsPage() {
           {forms.map(({ id, metadata }) => {
             return (
               <li key={id}>
-                <a href={`forms/${metadata.slug}`}>{metadata.name}</a>
+                <Link href={`forms/${metadata.slug}`}>{metadata.name}</Link>
               </li>
             );
           })}

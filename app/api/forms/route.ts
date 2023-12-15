@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/prisma";
+import { NextApiResponse } from "next";
 import { NextResponse } from "next/server";
 
 export enum QuestionType { // DONE
@@ -169,6 +170,26 @@ const formData: AssessmentFormData[] = [
     },
   },
 ];
+
+export async function POST(req: Request) {
+  const { name, slug, version } = await req.json();
+
+  try {
+    const form = await prisma.form.create({
+      data: {
+        metadata: { create: { name, slug, version } },
+      },
+    });
+    return NextResponse.json({
+      message: `Created form ${form.formMetaDataSlug}`,
+    });
+  } catch (err) {
+    return NextResponse.json(
+      { message: `failed creating the form "${slug}"` },
+      { status: 500 }
+    );
+  }
+}
 
 export async function GET() {
   const forms = await prisma.form.findMany({

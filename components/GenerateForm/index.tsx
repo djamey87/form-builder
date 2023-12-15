@@ -8,10 +8,12 @@ import {
 } from "@/app/api/forms/route";
 import { useState } from "react";
 import styles from "./index.module.css";
-import { Form, Question, QuestionType } from "@prisma/client";
+import { Form, Question, QuestionType, Response } from "@prisma/client";
+
+type QuestionData = Question & { responses: Response[] };
 
 type FormData = Form & {
-  questions: { [key: string]: Question };
+  questions: { [key: string]: QuestionData };
 };
 
 interface Props {
@@ -46,7 +48,7 @@ function determineAction(
 // [-] track question history
 // [x] only show current question? - might be problematic for returning customers
 // [-] track state via url - will help with GA tracking (or by section)
-// [-] on selection understand next action (show question / prompt / block / finish)
+// [x] on selection understand next action (show question / prompt / block / finish)
 export function GenerateForm({ formData }: Props) {
   const [currentQuestionId, setCurrentQuestionId] = useState("Q1");
   // const { questions, gpHighlights } = formData;
