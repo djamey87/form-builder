@@ -1,3 +1,11 @@
 .task-complete {
   text-decoration: line-through;
 }
+
+.margin-top-20 {
+  margin-top: 20px;
+}
+
+.border {
+  border: 1px solid black;
+}

@@ -17,7 +17,9 @@ export default async function FormsPage() {
           {forms.map(({ id, metadata }) => {
             return (
               <li key={id}>
-                <Link href={`forms/${metadata.slug}`}>{metadata.name}</Link>
+                <Link href={`forms/${metadata.slug}`}>
+                  {metadata.name} v{metadata.version}
+                </Link>
               </li>
             );
           })}

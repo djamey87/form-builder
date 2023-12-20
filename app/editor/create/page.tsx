@@ -1,23 +1,26 @@
 "use client";
+import QuestionForm from "@/components/QuestionForm";
+import { useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 
 export default function Page() {
   // TODO: default values
   const methods = useForm();
-  const { handleSubmit, register, setValue, getValues } = methods;
+  const { handleSubmit, register, setValue, getValues, formState } = methods;
+  const { isValid } = formState;
+
+  const [questionCount, setQuestionCount] = useState(0);
 
   const onFormSubmit = handleSubmit(async (data) => {
     const { name, version, slug } = data;
 
+    // fetch("../api/forms", {
+    //   body: JSON.stringify(data),
+    //   method: "post",
+    // });
+
     console.log("submit", data);
-
-    fetch("../api/forms", {
-      body: JSON.stringify(data),
-      method: "post",
-    });
   });
-
-  // const watchName = useWatch("name");
 
   return (
     <div>
@@ -66,12 +69,36 @@ export default function Page() {
               {...register("slug", {
                 required: true,
                 maxLength: 60,
-                // value: {`${getValues("name")}-${getValues("slug")}`}
               })}
             ></input>
           </div>
 
-          <button type="submit">Create</button>
+          <h3>Questions</h3>
+          {questionCount === 0 ? (
+            <p>No questions added</p>
+          ) : (
+            Array(questionCount)
+              .fill(0)
+              .map((_, index) => (
+                <QuestionForm key={`question-form-${index}`} id={index} />
+              ))
+          )}
+
+          <div>
+            <button
+              type="button"
+              onClick={() => setQuestionCount(questionCount + 1)}
+              disabled={!isValid}
+            >
+              Add Question
+            </button>
+          </div>
+
+          <div>
+            <button disabled={!isValid} type="submit">
+              Create
+            </button>
+          </div>
         </form>
       </FormProvider>
     </div>
