@@ -1,5 +1,6 @@
 "use client";
 import QuestionForm from "@/components/QuestionForm";
+import { questionFormToRequestBody } from "@/utils/questions";
 import { useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 
@@ -12,14 +13,19 @@ export default function Page() {
   const [questionCount, setQuestionCount] = useState(0);
 
   const onFormSubmit = handleSubmit(async (data) => {
-    const { name, version, slug } = data;
-
-    // fetch("../api/forms", {
-    //   body: JSON.stringify(data),
-    //   method: "post",
-    // });
+    const { questions, ...rest } = data;
 
     console.log("submit", data);
+
+    const questionBody = questionFormToRequestBody(questions);
+
+    console.log("parsed shiz", questionBody);
+
+    // TODO: parse question structure
+    fetch("../api/forms", {
+      body: JSON.stringify({ ...rest, questions: questionBody }),
+      method: "post",
+    });
   });
 
   return (
@@ -62,6 +68,7 @@ export default function Page() {
             />
           </div>
 
+          {/* TODO: requires URL encoding */}
           <div>
             <label htmlFor="slug">Slug</label>
             <input

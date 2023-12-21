@@ -2,6 +2,8 @@
 import { useFormContext } from "react-hook-form";
 // import { prisma } from "@/lib/prisma";
 import { QuestionType } from "@prisma/client";
+import { useState } from "react";
+import ResponseForm from "../ResponseForm";
 
 interface Props {
   id: number;
@@ -11,23 +13,22 @@ export default function QuestionForm({ id }: Props) {
   // TODO: default values
   const methods = useFormContext();
 
-  const { formState, watch } = methods;
-  const { isValid } = formState;
-  const idPrefix = `question.${id}`;
+  const { watch } = methods;
+  const idPrefix = `questions.${id}`;
 
   const questionType = watch(`${idPrefix}.type`, "none");
 
-  console.log("value", questionType);
+  const [responseCount, setResponseCount] = useState(0);
 
   return (
-    <div style={{ marginBottom: "20px" }}>
+    <div className="border margin-top-20">
       <div>
         <label>
-          ID
+          Reference
           <input
             type="text"
-            placeholder="ID"
-            {...methods.register(`${idPrefix}.id`, {
+            placeholder="Q1.1"
+            {...methods.register(`${idPrefix}.reference`, {
               required: true,
             })}
           />
@@ -65,8 +66,6 @@ export default function QuestionForm({ id }: Props) {
                 label={value.toLowerCase()}
               />
             ))}
-            {/* <option value="select" label="Select" />
-            <option value="text" label="Text" /> */}
           </select>
         </label>
       </div>
@@ -74,7 +73,26 @@ export default function QuestionForm({ id }: Props) {
       {/* TODO: if "select" then show response form */}
       {questionType !== QuestionType.SELECT ? null : (
         <div className="margin-top-20 border">
-          <h4>Responses</h4>
+          <p>Responses:</p>
+          {responseCount === 0 ? (
+            <p>No questions added</p>
+          ) : (
+            Array(responseCount)
+              .fill(0)
+              .map((_, index) => (
+                <ResponseForm
+                  key={`response-form-${index}`}
+                  questionId={id}
+                  responseId={index}
+                />
+              ))
+          )}
+          <button
+            type="button"
+            onClick={() => setResponseCount(responseCount + 1)}
+          >
+            Add a response
+          </button>
         </div>
       )}
     </div>

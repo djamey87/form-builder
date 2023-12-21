@@ -1,14 +1,21 @@
 export const dynamic = "force-dynamic";
 
 import { prisma } from "@/lib/prisma";
-import { NextApiResponse } from "next";
+import { QuestionType } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-export enum QuestionType { // DONE
-  select = "select",
-  textArea = "textArea",
-  text = "text",
+// export enum QuestionType {
+//   select = "select",
+//   textArea = "textArea",
+//   text = "text",
+// }
+
+export enum ActionType {
+  SHOW_QUESTION = "SHOW_QUESTION",
+  HIGHLIGHT = "HIGHLIGHT",
+  BLOCK = "BLOCK",
 }
+
 interface Response {
   value: string;
   label: string;
@@ -17,45 +24,45 @@ export interface Actions {
   [key: string]: string; // TODO: type substring here
 }
 
-interface GPHighlight {
-  id: string;
-  text: string;
-  action: string;
-}
-interface SelectQuestion {
-  id: string;
-  reference: string;
-  text: string;
-  responseValueActions: Actions;
-  questionType: QuestionType.select;
-  responses: Response[];
-}
+// interface GPHighlight {
+//   id: string;
+//   text: string;
+//   action: string;
+// }
+// interface SelectQuestion {
+//   id: string;
+//   reference: string;
+//   text: string;
+//   responseValueActions: Actions;
+//   questionType: QuestionType.select;
+//   responses: Response[];
+// }
 
-interface TextQuestion {
-  id: string;
-  reference: string;
-  text: string;
-  questionType: QuestionType.textArea | QuestionType.text;
-  responseValueActions: Actions;
-}
+// interface TextQuestion {
+//   id: string;
+//   reference: string;
+//   text: string;
+//   questionType: QuestionType.textArea | QuestionType.text;
+//   responseValueActions: Actions;
+// }
 
-export type Question = SelectQuestion | TextQuestion;
-export interface AssessmentFormData {
-  metadata: {
-    version: string;
-    name: string;
-  };
-  gpHighlights?: {
-    [key: string]: GPHighlight;
-  };
-  prompts?: {};
-  questions: {
-    [key: string]: Question;
-  };
-}
+// export type Question = SelectQuestion | TextQuestion;
+// export interface AssessmentFormData {
+//   metadata: {
+//     version: string;
+//     name: string;
+//   };
+//   gpHighlights?: {
+//     [key: string]: GPHighlight;
+//   };
+//   prompts?: {};
+//   questions: {
+//     [key: string]: Question;
+//   };
+// }
 
 // Dummy data
-const formData: AssessmentFormData[] = [
+const formData = [
   {
     metadata: {
       version: "1.0.0",
@@ -74,7 +81,7 @@ const formData: AssessmentFormData[] = [
         id: "Q1",
         reference: "",
         text: "What sex were you assigned at birth?",
-        questionType: QuestionType.select,
+        questionType: QuestionType.SELECT,
         responseValueActions: {
           female: "showQuestion:Q1.1",
           male: "showQuestion:Q2",
@@ -88,7 +95,7 @@ const formData: AssessmentFormData[] = [
         id: "Q1.1",
         reference: "",
         text: "Are you pregnant, breastfeeding or trying to conceive (now or in the near future)?",
-        questionType: QuestionType.select,
+        questionType: QuestionType.SELECT,
         responseValueActions: {
           none: "showQuestion:Q2",
           pregnant: "block",
@@ -106,7 +113,7 @@ const formData: AssessmentFormData[] = [
         id: "Q2",
         reference: "",
         text: "Are you aged between 18 - 74?",
-        questionType: QuestionType.select,
+        questionType: QuestionType.SELECT,
         responseValueActions: {
           yes: "showQuestion:Q3",
           no: "block",
@@ -120,7 +127,7 @@ const formData: AssessmentFormData[] = [
         id: "Q3",
         reference: "",
         text: "What is your height?",
-        questionType: QuestionType.text,
+        questionType: QuestionType.TEXT,
         responseValueActions: {
           default: "showQuestion:Q4",
         },
@@ -129,7 +136,7 @@ const formData: AssessmentFormData[] = [
         id: "Q4",
         reference: "",
         text: "What is your current weight? (It's really important you give us an accurate up-to-date measurement)",
-        questionType: QuestionType.text,
+        questionType: QuestionType.TEXT,
         responseValueActions: {
           default: "showQuestion:Q5",
         },
@@ -138,7 +145,7 @@ const formData: AssessmentFormData[] = [
         id: "Q5",
         reference: "",
         text: "What is your ethnicity? (This will help our prescribers gain a better idea about your risk in relation to your weight)",
-        questionType: QuestionType.select,
+        questionType: QuestionType.SELECT,
         responseValueActions: {
           bangladeshi: "highlight:H1",
           blackAfrican: "highlight:H1",
@@ -172,12 +179,23 @@ const formData: AssessmentFormData[] = [
 ];
 
 export async function POST(req: Request) {
-  const { name, slug, version } = await req.json();
+  const { name, slug, version, questions } = await req.json();
 
   try {
     const form = await prisma.form.create({
       data: {
         metadata: { create: { name, slug, version } },
+        questions: {
+          create: questions.map((question) => {
+            if (!question.responses) {
+              return question;
+            }
+            return {
+              ...question,
+              responses: { create: question.responses },
+            };
+          }),
+        },
       },
     });
     return NextResponse.json({
@@ -185,7 +203,7 @@ export async function POST(req: Request) {
     });
   } catch (err) {
     return NextResponse.json(
-      { message: `failed creating the form "${slug}"` },
+      { message: `failed creating the form "${slug}", ${err}` },
       { status: 500 }
     );
   }

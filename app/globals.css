@@ -7,5 +7,25 @@
 }
 
 .border {
-  border: 1px solid black;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 6px 15px;
+}
+
+label {
+  flex: 1;
+  flex-direction: column;
+}
+label > p {
+  margin: 0;
+}
+
+.row {
+  flex: 1;
+  flex-direction: row;
+  display: flex;
+}
+
+.row > * {
+  flex: 1
 }

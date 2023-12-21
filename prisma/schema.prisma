@@ -82,11 +82,17 @@ model Response {
   questionId String?
 }
 
+// model Action {
+//   id         String     @id @default(cuid())
+//   type       ActionType
+//   target     String
+// }
+
 model Question {
   id                   String       @id @default(cuid())
   reference            String
   text                 String
-  responseValueActions Json
+  responseValueActions Json         @default("{}")
   questionType         QuestionType @default(SELECT)
   responses            Response[]
   Form                 Form?        @relation(fields: [formId], references: [id])
