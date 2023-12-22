@@ -21,7 +21,7 @@ interface Response {
   label: string;
 }
 export interface Actions {
-  [key: string]: string; // TODO: type substring here
+  [key: string]: { type: ActionType; target: string }; // TODO: type substring here
 }
 
 // interface GPHighlight {

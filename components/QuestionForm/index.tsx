@@ -18,7 +18,7 @@ export default function QuestionForm({ id }: Props) {
 
   const questionType = watch(`${idPrefix}.type`, "none");
 
-  const [responseCount, setResponseCount] = useState(0);
+  const [responseCount, setResponseCount] = useState(1);
 
   return (
     <div className="border margin-top-20">
@@ -71,7 +71,9 @@ export default function QuestionForm({ id }: Props) {
       </div>
 
       {/* TODO: if "select" then show response form */}
-      {questionType !== QuestionType.SELECT ? null : (
+      {questionType !== QuestionType.SELECT ? (
+        <ResponseForm questionId={id} responseId={0} defaultOnly />
+      ) : (
         <div className="margin-top-20 border">
           <p>Responses:</p>
           {responseCount === 0 ? (

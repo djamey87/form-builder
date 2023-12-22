@@ -76,17 +76,11 @@ enum ActionType {
 
 model Response {
   id         String    @id @default(cuid())
-  value      String
-  label      String
+  value      String?
+  label      String?
   Question   Question? @relation(fields: [questionId], references: [id])
   questionId String?
 }
-
-// model Action {
-//   id         String     @id @default(cuid())
-//   type       ActionType
-//   target     String
-// }
 
 model Question {
   id                   String       @id @default(cuid())

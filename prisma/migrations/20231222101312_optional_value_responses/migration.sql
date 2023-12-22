@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Response" ALTER COLUMN "value" DROP NOT NULL,
+ALTER COLUMN "label" DROP NOT NULL;

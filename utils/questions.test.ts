@@ -26,6 +26,19 @@ describe("question utils", () => {
           },
         ],
       },
+      {
+        reference: "Q2",
+        text: "What is your height",
+        type: "TEXT",
+        responses: [
+          {
+            action: {
+              type: "SHOW_QUESTION",
+              target: "Q3",
+            },
+          },
+        ],
+      },
     ];
 
     const expectedRequestBody = [
@@ -49,6 +62,17 @@ describe("question utils", () => {
             label: "Male",
           },
         ],
+      },
+      {
+        reference: "Q2",
+        text: "What is your height",
+        questionType: QuestionType.TEXT,
+        responseValueActions: {
+          default: {
+            type: "SHOW_QUESTION",
+            target: "Q3",
+          },
+        },
       },
     ];
 

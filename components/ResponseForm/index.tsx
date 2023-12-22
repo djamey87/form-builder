@@ -1,14 +1,18 @@
 "use client";
 import { ActionType } from "@/app/api/forms/route";
 import { useFormContext } from "react-hook-form";
-// import { ActionType } from "@prisma/client";
 
 interface Props {
   questionId: number;
   responseId: number;
+  defaultOnly?: boolean;
 }
 
-export default function ResponseForm({ questionId, responseId }: Props) {
+export default function ResponseForm({
+  questionId,
+  responseId,
+  defaultOnly = false,
+}: Props) {
   // TODO: default values
   const methods = useFormContext();
   const idPrefix = `questions.${questionId}.responses.${responseId}`;
@@ -16,32 +20,35 @@ export default function ResponseForm({ questionId, responseId }: Props) {
 
   return (
     <div className="border margin-top-20 row">
-      <div>
-        <label>
-          <p>Value</p>
-          <input
-            type="text"
-            placeholder="Value"
-            {...methods.register(`${idPrefix}.value`, {
-              required: true,
-            })}
-          />
-        </label>
-      </div>
+      {defaultOnly ? null : (
+        <>
+          <div>
+            <label>
+              <p>Value</p>
+              <input
+                type="text"
+                placeholder="Value"
+                {...methods.register(`${idPrefix}.value`, {
+                  required: true,
+                })}
+              />
+            </label>
+          </div>
 
-      <div>
-        <label>
-          <p>Label</p>
-          <input
-            type="text"
-            placeholder="Label"
-            {...methods.register(`${idPrefix}.label`, {
-              required: true,
-            })}
-          />
-        </label>
-      </div>
-
+          <div>
+            <label>
+              <p>Label</p>
+              <input
+                type="text"
+                placeholder="Label"
+                {...methods.register(`${idPrefix}.label`, {
+                  required: true,
+                })}
+              />
+            </label>
+          </div>
+        </>
+      )}
       <div>
         <p>Action</p>
         <div className="border row">

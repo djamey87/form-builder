@@ -22,7 +22,9 @@ export default async function Page({ params }: Props) {
 
   const formData = {
     ...form,
-    questions: Object.fromEntries(questions.map((form) => [form.id, form])),
+    questions: Object.fromEntries(
+      questions.map((form) => [form.reference, form])
+    ),
   };
 
   return (

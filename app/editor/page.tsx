@@ -15,8 +15,9 @@ export default async function EditorPage() {
         <li className="task-complete">
           Database setup to store form structure
         </li>
-        <li>Form to create the form!</li>
-        <li>Versioning of form?</li>
+        <li className="task-complete">Form to create the form!</li>
+        <li>Edit saved forms</li>
+        <li>Versioning of form</li>
         <li>Authentication to protect and track form changes</li>
       </ol>
 

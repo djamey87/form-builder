@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Actions,
-  // AssessmentFormData,
-  // Question,
-  // QuestionType,
-} from "@/app/api/forms/route";
+import { ActionType, Actions } from "@/app/api/forms/route";
 import { useState } from "react";
 import styles from "./index.module.css";
 import { Form, Question, QuestionType, Response } from "@prisma/client";
@@ -20,28 +15,29 @@ interface Props {
   formData: FormData;
 }
 
-enum SelectedActions {
-  showQuestion = "showQuestion",
-  showPrompt = "showPrompt",
-  highlight = "highlight",
-  block = "block",
-}
+// enum SelectedActions {
+//   showQuestion = "showQuestion",
+//   showPrompt = "showPrompt",
+//   highlight = "highlight",
+//   block = "block",
+// }
 
 function determineAction(
   actions: Actions,
   selectedValue: string
-): [SelectedActions, string] {
+): [ActionType, string] {
   // TODO: determine which value action to select: "default" or other values
   // NOTE: key could be an delimitted string?
+  // TODO: form builder should provide default actions
   let foundAction = actions[selectedValue] || actions["default"];
   if (!foundAction) {
     throw new Error("No action found for selected value " + selectedValue);
   }
   // TODO: understand action
-  const [rawAction, target] = foundAction.split(":");
-  const action = rawAction as SelectedActions;
+  const { type, target } = foundAction;
+  // const action = rawAction as ActionType;
 
-  return [action, target];
+  return [type, target];
 }
 
 // TODO:
@@ -51,9 +47,7 @@ function determineAction(
 // [x] on selection understand next action (show question / prompt / block / finish)
 export function GenerateForm({ formData }: Props) {
   const [currentQuestionId, setCurrentQuestionId] = useState("Q1");
-  // const { questions, gpHighlights } = formData;
   const { questions } = formData;
-  // const questionsMap = new Set(questions);
   const question = questions[currentQuestionId];
 
   if (!question) {
@@ -67,14 +61,14 @@ export function GenerateForm({ formData }: Props) {
     );
 
     switch (action) {
-      case SelectedActions.showQuestion:
+      case ActionType.SHOW_QUESTION:
         setCurrentQuestionId(target);
         break;
-      case SelectedActions.block:
+      case ActionType.BLOCK:
         alert("You shall not pass! - user blocked");
         // reset form?
         break;
-      case SelectedActions.highlight:
+      case ActionType.HIGHLIGHT:
         console.warn("");
       // TODO: highlight shiz & get next question
       // setCurrentQuestionId(target);
@@ -85,17 +79,17 @@ export function GenerateForm({ formData }: Props) {
 
   return (
     <form>
-      {Object.values(questions).map(({ id, text, ...rest }) => {
+      {Object.values(questions).map(({ reference, text, ...rest }) => {
         return (
           <div
-            key={`question-${id}`}
-            className={id !== currentQuestionId ? styles.hide : ""}
+            key={`question-${reference}`}
+            className={reference !== currentQuestionId ? styles.hide : ""}
           >
-            <label htmlFor={id}>{`${id}. ${text}`}</label>
+            <label htmlFor={reference}>{`${reference}. ${text}`}</label>
 
             {rest.questionType === QuestionType.SELECT && (
               <select
-                id={id}
+                id={reference}
                 defaultValue="placeholder"
                 onChange={(e) => handleSelection(e.target.value)}
                 required
@@ -104,7 +98,7 @@ export function GenerateForm({ formData }: Props) {
                 {Object.values(rest.responses).map(({ label, value }) => {
                   return (
                     <option
-                      key={`response-${id}-${value}`}
+                      key={`response-${reference}-${value}`}
                       value={value}
                       label={label}
                     />
@@ -115,7 +109,7 @@ export function GenerateForm({ formData }: Props) {
 
             {rest.questionType === QuestionType.TEXT && (
               <div>
-                <input required type="text" id={id} minLength={3} />
+                <input required type="text" id={reference} minLength={3} />
                 <button type="button" onClick={() => handleSelection()}>
                   OK
                 </button>

@@ -23,7 +23,7 @@ export const questionFormToRequestBody = (questionData: any[]): Question[] => {
           action: { type: string; target: string };
         }) => {
           if (action) {
-            actionsBody[value] = action;
+            actionsBody[value || "default"] = action;
           }
 
           return { value, label };

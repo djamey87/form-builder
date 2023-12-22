@@ -10,13 +10,18 @@ async function main() {
       questions: {
         create: [
           {
-            id: "Q1",
-            reference: "",
+            reference: "Q1",
             text: "What sex were you assigned at birth?",
             questionType: QuestionType.SELECT,
             responseValueActions: {
-              female: "showQuestion:Q1.1",
-              male: "showQuestion:Q2",
+              female: {
+                type: "SHOW_QUESTION",
+                target: "Q1.1",
+              },
+              male: {
+                type: "SHOW_QUESTION",
+                target: "Q2",
+              },
             },
             responses: {
               create: [
@@ -26,15 +31,23 @@ async function main() {
             },
           },
           {
-            id: "Q1.1",
-            reference: "",
+            reference: "Q1.1",
             text: "Are you pregnant, breastfeeding or trying to conceive (now or in the near future)?",
             questionType: QuestionType.SELECT,
             responseValueActions: {
-              none: "showQuestion:Q2",
-              pregnant: "block",
-              breastfeeding: "block",
-              conceive: "block",
+              none: {
+                type: "SHOW_QUESTION",
+                target: "Q2",
+              },
+              pregnant: {
+                type: "BLOCK",
+              },
+              breastfeeding: {
+                type: "BLOCK",
+              },
+              conceive: {
+                type: "BLOCK",
+              },
             },
             responses: {
               create: [
@@ -49,13 +62,17 @@ async function main() {
             },
           },
           {
-            id: "Q2",
-            reference: "",
+            reference: "Q2",
             text: "Are you aged between 18 - 74?",
             questionType: QuestionType.SELECT,
             responseValueActions: {
-              yes: "showQuestion:Q3",
-              no: "block",
+              yes: {
+                type: "SHOW_QUESTION",
+                target: "Q3",
+              },
+              no: {
+                type: "BLOCK",
+              },
             },
             responses: {
               create: [
@@ -65,40 +82,75 @@ async function main() {
             },
           },
           {
-            id: "Q3",
-            reference: "",
+            reference: "Q3",
             text: "What is your height?",
             questionType: QuestionType.TEXT,
             responseValueActions: {
-              default: "showQuestion:Q4",
+              default: {
+                type: "SHOW_QUESTION",
+                target: "Q4",
+              },
             },
           },
           {
-            id: "Q4",
-            reference: "",
+            reference: "Q4",
             text: "What is your current weight? (It's really important you give us an accurate up-to-date measurement)",
             questionType: QuestionType.TEXT,
             responseValueActions: {
-              default: "showQuestion:Q5",
+              default: {
+                type: "SHOW_QUESTION",
+                target: "Q5",
+              },
             },
           },
           {
-            id: "Q5",
-            reference: "",
+            reference: "Q5",
             text: "What is your ethnicity? (This will help our prescribers gain a better idea about your risk in relation to your weight)",
             questionType: QuestionType.SELECT,
             responseValueActions: {
-              bangladeshi: "highlight:H1",
-              blackAfrican: "highlight:H1",
-              blackCaribbean: "highlight:H1",
-              chinese: "highlight:H1",
-              indian: "highlight:H1",
-              middleEastern: "highlight:H1",
-              mixed: "highlight:H1",
-              pakistani: "highlight:H1",
-              other: "highlight:H1",
-              yes: "showQuestion:Q3",
-              no: "block",
+              bangladeshi: {
+                type: "HIGHLIGHT",
+                target: "H1",
+              },
+              blackAfrican: {
+                type: "HIGHLIGHT",
+                target: "H1",
+              },
+              blackCaribbean: {
+                type: "HIGHLIGHT",
+                target: "H1",
+              },
+              chinese: {
+                type: "HIGHLIGHT",
+                target: "H1",
+              },
+              indian: {
+                type: "HIGHLIGHT",
+                target: "H1",
+              },
+              middleEastern: {
+                type: "HIGHLIGHT",
+                target: "H1",
+              },
+              mixed: {
+                type: "HIGHLIGHT",
+                target: "H1",
+              },
+              pakistani: {
+                type: "HIGHLIGHT",
+                target: "H1",
+              },
+              other: {
+                type: "HIGHLIGHT",
+                target: "H1",
+              },
+              yes: {
+                type: "SHOW_QUESTION",
+                target: "Q3",
+              },
+              no: {
+                type: "BLOCK",
+              },
             },
             responses: {
               create: [
