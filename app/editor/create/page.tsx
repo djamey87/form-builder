@@ -5,6 +5,17 @@ import { questionFormToRequestBody } from "@/utils/questions";
 import { useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 
+// TODO:
+// [] product selection - interact with endpoint
+// [] add instructional text
+// [] question sections
+// [] configurable auth functionality?
+// [] radio types
+// [] multi-select
+// [] other text field functionality
+// [] acknowledgements
+// [] styling to match wegovy-assement repo?
+// [] handle different environments
 export default function Page() {
   // TODO: default values
   const methods = useForm();
