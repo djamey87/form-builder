@@ -9,8 +9,10 @@ interface Props {
   id: number;
 }
 
+// TODO:
+// [-] default values (edit form only)
+// [-] disable enter button (submitting form)
 export default function QuestionForm({ id }: Props) {
-  // TODO: default values
   const methods = useFormContext();
 
   const { watch } = methods;
