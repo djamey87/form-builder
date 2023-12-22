@@ -23,7 +23,7 @@ export default function QuestionForm({ id }: Props) {
   const [responseCount, setResponseCount] = useState(1);
 
   return (
-    <div className="border margin-top-20">
+    <div className="border mt-20">
       <div>
         <label>
           Reference
@@ -76,7 +76,7 @@ export default function QuestionForm({ id }: Props) {
       {questionType !== QuestionType.SELECT ? (
         <ResponseForm questionId={id} responseId={0} defaultOnly />
       ) : (
-        <div className="margin-top-20 border">
+        <div className="mt-20 border">
           <p>Responses:</p>
           {responseCount === 0 ? (
             <p>No questions added</p>

@@ -7,7 +7,7 @@ import { Form, Question, QuestionType, Response } from "@prisma/client";
 
 type QuestionData = Question & { responses: Response[] };
 
-type FormData = Form & {
+export type FormData = Form & {
   questions: { [key: string]: QuestionData };
 };
 
@@ -48,10 +48,16 @@ function determineAction(
 export function GenerateForm({ formData }: Props) {
   const [currentQuestionId, setCurrentQuestionId] = useState("Q1");
   const { questions } = formData;
+
+  if (!questions) {
+    return <p>Please add question information</p>;
+  }
+
   const question = questions[currentQuestionId];
 
   if (!question) {
-    alert("no question data found for " + currentQuestionId);
+    console.log(questions);
+    console.warn("no question data found for " + currentQuestionId);
   }
 
   const handleSelection = (selectedValue: string = "default") => {

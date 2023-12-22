@@ -19,7 +19,7 @@ export default function ResponseForm({
   const actionType = methods.watch(`${idPrefix}.action.type`, "none");
 
   return (
-    <div className="border margin-top-20 row">
+    <div className="border mt-20 row">
       {defaultOnly ? null : (
         <>
           <div>
