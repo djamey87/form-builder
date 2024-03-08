@@ -1,6 +1,6 @@
 "use client";
 
-import { Products } from "@/app/api/products";
+import { Product } from "@/app/api/products";
 import { FormData, GenerateForm } from "@/components/GenerateForm";
 import QuestionForm from "@/components/QuestionForm";
 import { questionFormToRequestBody } from "@/utils/questions";
@@ -8,7 +8,7 @@ import { useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 
 interface Props {
-  products: Products;
+  products: Product[];
 }
 
 export function CreateForm({ products }: Props) {
@@ -100,10 +100,32 @@ export function CreateForm({ products }: Props) {
               ></input>
             </div>
 
-            <h3>Products</h3>
-            <p style={{ fontStyle: "italic" }}>
-              Select the products relevant to this questionnaire
-            </p>
+            <label>
+              <h3>Products</h3>
+              <p style={{ fontStyle: "italic" }}>
+                Select all that apply to the form
+              </p>
+              <select defaultValue="none" multiple>
+                <option value="none" label="please select" disabled />
+                {products.map(({ item_id, name, saleItems }) => (
+                  <optgroup key={item_id} label={name}>
+                    {saleItems?.length > 0 ? (
+                      <>
+                        {saleItems.map(({ id, size }) => (
+                          <option
+                            key={`product-${item_id}-${id}`}
+                            label={size}
+                            value={id}
+                          />
+                        ))}
+                      </>
+                    ) : (
+                      <option value="none" label="please select" disabled />
+                    )}
+                  </optgroup>
+                ))}
+              </select>
+            </label>
 
             <h3>Questions</h3>
             {questionCount === 0 ? (

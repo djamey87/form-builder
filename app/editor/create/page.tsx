@@ -14,7 +14,8 @@ import { CreateForm } from "@/components/CreateForm";
 // [] handle different environments
 
 export default async function Page() {
-  const products = await getProductsByCategory("3489");
+  // TODO: need to allow this to be more generic
+  const { products } = await getProductsByCategory("3489");
 
   return <CreateForm products={products} />;
 }
