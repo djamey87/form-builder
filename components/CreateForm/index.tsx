@@ -5,15 +5,12 @@ import { FormData, GenerateForm } from "@/components/GenerateForm";
 import QuestionForm from "@/components/QuestionForm";
 import { questionFormToRequestBody } from "@/utils/questions";
 import { useState } from "react";
-import { FormProvider, useForm, useWatch } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 
-interface Props {
-  products: Product[];
-}
-
-export function CreateForm({ products }: Props) {
+export function CreateForm() {
   const methods = useForm();
   const { handleSubmit, register, setValue, getValues, formState } = methods;
+
   const [previewData, setPreviewData] = useState({});
   const { isValid } = formState;
 
@@ -48,129 +45,102 @@ export function CreateForm({ products }: Props) {
   });
 
   return (
-    <FormProvider {...methods}>
-      <div className="row">
-        <div>
-          <h1>Create a form</h1>
+    <>
+      <FormProvider {...methods}>
+        <div className="row">
+          <div>
+            <form onSubmit={onFormSubmit}>
+              <div>
+                <label htmlFor="name">Name</label>
+                <input
+                  type="text"
+                  placeholder="name"
+                  {...register("name", {
+                    required: true,
+                    maxLength: 50,
+                  })}
+                  onChange={(e) => {
+                    let slug = `${e.target.value.toLowerCase()}-v${getValues(
+                      "version"
+                    )}`;
+                    setValue("slug", slug);
+                  }}
+                />
+              </div>
 
-          <form onSubmit={onFormSubmit}>
-            <div>
-              <label htmlFor="name">Name</label>
-              <input
-                type="text"
-                placeholder="name"
-                {...register("name", {
-                  required: true,
-                  maxLength: 50,
-                })}
-                onChange={(e) => {
-                  let slug = `${e.target.value.toLowerCase()}-v${getValues(
-                    "version"
-                  )}`;
-                  setValue("slug", slug);
-                }}
-              />
-            </div>
+              {/* TODO: this should be auto-incremented if updated */}
+              <div>
+                <label htmlFor="version">Version</label>
+                <input
+                  type="text"
+                  placeholder="version"
+                  defaultValue="1"
+                  readOnly
+                  {...register("version", {
+                    value: "1",
+                    required: true,
+                    maxLength: 10,
+                  })}
+                />
+              </div>
 
-            {/* TODO: this should be auto-incremented if updated */}
-            <div>
-              <label htmlFor="version">Version</label>
-              <input
-                type="text"
-                placeholder="version"
-                defaultValue="1"
-                readOnly
-                {...register("version", {
-                  value: "1",
-                  required: true,
-                  maxLength: 10,
-                })}
-              />
-            </div>
+              {/* TODO: requires URL encoding */}
+              <div>
+                <label htmlFor="slug">Slug</label>
+                <input
+                  readOnly
+                  {...register("slug", {
+                    required: true,
+                    maxLength: 60,
+                  })}
+                ></input>
+              </div>
 
-            {/* TODO: requires URL encoding */}
-            <div>
-              <label htmlFor="slug">Slug</label>
-              <input
-                readOnly
-                {...register("slug", {
-                  required: true,
-                  maxLength: 60,
-                })}
-              ></input>
-            </div>
+              <h3>Questions</h3>
+              {questionCount === 0 ? (
+                <p>No questions added</p>
+              ) : (
+                Array(questionCount)
+                  .fill(0)
+                  .map((_, index) => (
+                    <QuestionForm key={`question-form-${index}`} id={index} />
+                  ))
+              )}
 
-            <label>
-              <h3>Products</h3>
-              <p style={{ fontStyle: "italic" }}>
-                Select all that apply to the form
-              </p>
-              <select defaultValue="none" multiple>
-                <option value="none" label="please select" disabled />
-                {products.map(({ item_id, name, saleItems }) => (
-                  <optgroup key={item_id} label={name}>
-                    {saleItems?.length > 0 ? (
-                      <>
-                        {saleItems.map(({ id, size }) => (
-                          <option
-                            key={`product-${item_id}-${id}`}
-                            label={size}
-                            value={id}
-                          />
-                        ))}
-                      </>
-                    ) : (
-                      <option value="none" label="please select" disabled />
-                    )}
-                  </optgroup>
-                ))}
-              </select>
-            </label>
+              <div className="mt-20">
+                <button
+                  type="button"
+                  onClick={() => setQuestionCount(questionCount + 1)}
+                  disabled={!isValid}
+                >
+                  Add Question
+                </button>
+              </div>
 
-            <h3>Questions</h3>
-            {questionCount === 0 ? (
-              <p>No questions added</p>
-            ) : (
-              Array(questionCount)
-                .fill(0)
-                .map((_, index) => (
-                  <QuestionForm key={`question-form-${index}`} id={index} />
-                ))
-            )}
+              <div className="row mt-20">
+                <button disabled={!isValid} type="submit">
+                  Create
+                </button>
 
-            <div className="mt-20">
-              <button
-                type="button"
-                onClick={() => setQuestionCount(questionCount + 1)}
-                disabled={!isValid}
-              >
-                Add Question
-              </button>
-            </div>
+                <button
+                  className="ml-20"
+                  disabled={!isValid}
+                  onClick={onPreview}
+                  type="button"
+                >
+                  Preview
+                </button>
+              </div>
+            </form>
+          </div>
 
-            <div className="row mt-20">
-              <button disabled={!isValid} type="submit">
-                Create
-              </button>
+          <div className="border ml-20">
+            <h2>Preview</h2>
 
-              <button
-                className="ml-20"
-                disabled={!isValid}
-                onClick={onPreview}
-                type="button"
-              >
-                Preview
-              </button>
-            </div>
-          </form>
+            <GenerateForm formData={previewData as FormData} />
+          </div>
         </div>
-
-        <div className="border ml-20">
-          <h2>Preview</h2>
-
-          <GenerateForm formData={previewData as FormData} />
-        </div>
-      </div>
-    </FormProvider>
+      </FormProvider>
+    </>
   );
 }

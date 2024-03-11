@@ -1,6 +1,5 @@
 "use client";
 import { useFormContext } from "react-hook-form";
-// import { prisma } from "@/lib/prisma";
 import { QuestionType } from "@prisma/client";
 import { useState } from "react";
 import ResponseForm from "../ResponseForm";

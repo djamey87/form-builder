@@ -1,5 +1,6 @@
 import { getProductsByCategory } from "@/app/api/products";
 import { CreateForm } from "@/components/CreateForm";
+import { ProductSelectionForm } from "@/components/ProductSelectionForm";
 
 // TODO:
 // [] product selection - interact with endpoint
@@ -17,5 +18,12 @@ export default async function Page() {
   // TODO: need to allow this to be more generic
   const { products } = await getProductsByCategory("3489");
 
-  return <CreateForm products={products} />;
+  return (
+    <>
+      <h1>Create a Questionnaire</h1>
+      <ProductSelectionForm products={products} />
+      <hr />
+      <CreateForm />
+    </>
+  );
 }
