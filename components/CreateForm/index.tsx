@@ -6,10 +6,17 @@ import QuestionForm from "@/components/QuestionForm";
 import { questionFormToRequestBody } from "@/utils/questions";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { ProductSelectionForm, SelectedProduct } from "../ProductSelectionForm";
 
-export function CreateForm() {
+interface Props {
+  products: Product[];
+}
+
+export function CreateForm({ products }: Props) {
+  console.log("prods", products);
   const methods = useForm();
   const { handleSubmit, register, setValue, getValues, formState } = methods;
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]); // JSON blob
 
   const [previewData, setPreviewData] = useState({});
   const { isValid } = formState;
@@ -46,6 +53,21 @@ export function CreateForm() {
 
   return (
     <>
+      <ProductSelectionForm
+        products={products}
+        onChange={(selected) => setSelectedProducts(selected)}
+      />
+
+      <hr />
+
+      <p>selected products:</p>
+      <ul>
+        {selectedProducts.map((prod) => {
+          const { id, label } = JSON.parse(prod);
+          return <li key={id}>{label}</li>;
+        })}
+      </ul>
+
       <FormProvider {...methods}>
         <div className="row">
           <div>

@@ -1,6 +1,5 @@
 import { getProductsByCategory } from "@/app/api/products";
 import { CreateForm } from "@/components/CreateForm";
-import { ProductSelectionForm } from "@/components/ProductSelectionForm";
 
 // TODO:
 // [] product selection - interact with endpoint
@@ -21,9 +20,7 @@ export default async function Page() {
   return (
     <>
       <h1>Create a Questionnaire</h1>
-      <ProductSelectionForm products={products} />
-      <hr />
-      <CreateForm />
+      <CreateForm products={products} />
     </>
   );
 }

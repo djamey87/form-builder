@@ -5,9 +5,15 @@ import { Product } from "@/app/api/products";
 
 interface Props {
   products: Product[];
+  onChange: (selected: []) => void;
 }
 
-export function ProductSelectionForm({ products }: Props) {
+export type SelectedProduct = {
+  id: string;
+  label: string;
+};
+
+export function ProductSelectionForm({ products, onChange }: Props) {
   const productFormMethods = useForm();
   const {
     register: productFormRegister,
@@ -17,6 +23,8 @@ export function ProductSelectionForm({ products }: Props) {
   const onSelectProducts = handleProductSelection(async (data) => {
     const { products } = data;
     console.log("data", products);
+
+    onChange(products);
   });
 
   return (
@@ -24,10 +32,6 @@ export function ProductSelectionForm({ products }: Props) {
       <form onSubmit={onSelectProducts}>
         <label htmlFor="products">
           <h3>Select Products</h3>
-
-          {/* <p style={{ fontStyle: "italic" }}>
-            Select all products that apply to the form
-          </p> */}
         </label>
         <select
           defaultValue={["none"]}
@@ -43,7 +47,7 @@ export function ProductSelectionForm({ products }: Props) {
                     <option
                       key={`product-${item_id}-${id}`}
                       label={size}
-                      value={id}
+                      value={JSON.stringify({ id, label: size })}
                     />
                   ))}
                 </>
