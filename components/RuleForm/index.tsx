@@ -12,32 +12,75 @@ interface Props {
 export default function RuleForm({ id, products }: Props) {
   const methods = useFormContext();
 
-  const { watch } = methods;
+  const { watch, getValues } = methods;
   const idPrefix = `rules.${id}`;
-  const conditionType = watch(`${idPrefix}.conditionType`, "none");
+  const { questions } = getValues();
 
-  // const [responseCount, setResponseCount] = useState(1);
+  console.log("questions", questions);
+
+  const [responseCount, setResponseCount] = useState(1);
 
   return (
     <div className="border mt-20">
-      {/* TODO: only if question count > 1 */}
       <div>
-        <label>
-          <p>Condition type</p>
-          <select
-            placeholder="Question type"
-            defaultValue="none"
-            {...methods.register(`${idPrefix}.conditionType`, {
-              required: true,
-            })}
-          >
-            <option value="none" label="please select" disabled />
-            {Object.entries(ConditionType).map(([_, value]) => (
-              <option key={`type-${value}`} value={value} label={value} />
-            ))}
-          </select>
+        <label htmlFor="products">
+          <p>
+            Responses <i>(SELECT types only)</i>
+          </p>
         </label>
+        <select
+          defaultValue={["none"]}
+          multiple
+          {...methods.register(`${idPrefix}.questionResponses`)}
+        >
+          <option value="none" label="please select" disabled />
+          {questions.map(({ reference, responses, text, type }) => (
+            <>
+              {type !== "SELECT" ? null : (
+                <optgroup key={reference} label={`${reference} - ${text}`}>
+                  {responses?.length > 0 ? (
+                    <>
+                      {responses.map(({ label, value }) => (
+                        <option
+                          key={`question-${reference}-${value}`}
+                          label={label}
+                          value={JSON.stringify({
+                            questionReference: reference,
+                            response: value,
+                          })}
+                        />
+                      ))}
+                    </>
+                  ) : (
+                    <option value="none" label="please select" disabled />
+                  )}
+                </optgroup>
+              )}
+            </>
+          ))}
+        </select>
       </div>
+
+      {/* TODO: only if question count > 1 */}
+      {responseCount === 1 ? null : (
+        <div>
+          <label>
+            <p>Condition type</p>
+            <select
+              placeholder="Question type"
+              defaultValue="none"
+              {...methods.register(`${idPrefix}.conditionType`, {
+                required: true,
+              })}
+            >
+              <option value="none" label="please select" disabled />
+              {Object.entries(ConditionType).map(([_, value]) => (
+                <option key={`type-${value}`} value={value} label={value} />
+              ))}
+            </select>
+          </label>
+        </div>
+      )}
 
       <div>
         <label htmlFor="products">
