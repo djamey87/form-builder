@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export enum ActionType {
+  COMPLETE = "COMPLETE",
   SHOW_QUESTION = "SHOW_QUESTION",
   HIGHLIGHT = "HIGHLIGHT",
   BLOCK = "BLOCK",

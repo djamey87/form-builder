@@ -1,13 +1,13 @@
 import { getProductsByCategory } from "@/app/api/products";
-import { CreateForm } from "@/components/CreateForm";
+import { QuestionnaireForm } from "@/components/QuestionnaireForm";
 
 // TODO:
 // [] product selection - interact with endpoint
 // [] add instructional text - Markdown?
-// [X] question sections
+// [] question sections
 // [] configurable auth functionality?
 // [] radio types
-// [] multi-select
+// [x] multi-select
 // [] other text field functionality
 // [] acknowledgements
 // [] styling to match wegovy-assement repo?
@@ -20,7 +20,8 @@ export default async function Page() {
   return (
     <>
       <h1>Create a Questionnaire</h1>
-      <CreateForm products={products} />
+      <QuestionnaireForm products={products} />
+      {/* <SelectionLogicForm products={products} /> */}
     </>
   );
 }

@@ -7,21 +7,23 @@ import { questionFormToRequestBody } from "@/utils/questions";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { ProductSelectionForm, SelectedProduct } from "../ProductSelectionForm";
+import RuleForm from "../RuleForm";
 
 interface Props {
   products: Product[];
 }
 
-export function CreateForm({ products }: Props) {
-  console.log("prods", products);
+export function QuestionnaireForm({ products }: Props) {
   const methods = useForm();
   const { handleSubmit, register, setValue, getValues, formState } = methods;
-  const [selectedProducts, setSelectedProducts] = useState<string[]>([]); // JSON blob
+  // const [selectedProducts, setSelectedProducts] = useState<string[]>([]); // JSON blob
+  const [showRulesPage, setShowRulesPage] = useState(false);
 
   const [previewData, setPreviewData] = useState({});
   const { isValid } = formState;
 
   const [questionCount, setQuestionCount] = useState(0);
+  const [ruleCount, setRuleCount] = useState(0);
 
   const onPreview = () => {
     const { questions, ...rest } = getValues();
@@ -35,25 +37,30 @@ export function CreateForm({ products }: Props) {
     setPreviewData(updatedData);
   };
 
+  const onSaveQuestions = handleSubmit(async (data) => {
+    // const { questions, ...rest } = data;
+
+    // const questionBody = questionFormToRequestBody(questions);
+    onPreview();
+    setShowRulesPage(true);
+    console.log(showRulesPage);
+  });
+
   const onFormSubmit = handleSubmit(async (data) => {
-    const { questions, ...rest } = data;
-
-    console.log("submit", data);
-
-    const questionBody = questionFormToRequestBody(questions);
-
-    console.log("parsed shiz", questionBody);
-
-    // TODO: parse question structure
-    fetch("../api/forms", {
-      body: JSON.stringify({ ...rest, questions: questionBody }),
-      method: "post",
-    });
+    // const { questions, ...rest } = data;
+    // console.log("submit", data);
+    // const questionBody = questionFormToRequestBody(questions);
+    // console.log("parsed shiz", questionBody);
+    // // TODO: parse question structure
+    // fetch("../api/forms", {
+    //   body: JSON.stringify({ ...rest, questions: questionBody }),
+    //   method: "post",
+    // });
   });
 
   return (
     <>
-      <ProductSelectionForm
+      {/* <ProductSelectionForm
         products={products}
         onChange={(selected) => setSelectedProducts(selected)}
       />
@@ -66,7 +73,7 @@ export function CreateForm({ products }: Props) {
           const { id, label } = JSON.parse(prod);
           return <li key={id}>{label}</li>;
         })}
-      </ul>
+      </ul> */}
 
       <FormProvider {...methods}>
         <div className="row">
@@ -118,31 +125,70 @@ export function CreateForm({ products }: Props) {
                 ></input>
               </div>
 
-              <h3>Questions</h3>
-              {questionCount === 0 ? (
-                <p>No questions added</p>
+              {!showRulesPage ? (
+                <>
+                  <h3>Questions</h3>
+                  {questionCount === 0 ? (
+                    <p>No questions added</p>
+                  ) : (
+                    Array(questionCount)
+                      .fill(0)
+                      .map((_, index) => (
+                        <QuestionForm
+                          key={`question-form-${index}`}
+                          id={index}
+                        />
+                      ))
+                  )}
+
+                  <div className="mt-20">
+                    <button
+                      type="button"
+                      onClick={() => setQuestionCount(questionCount + 1)}
+                      disabled={!isValid}
+                    >
+                      Add Question
+                    </button>
+                  </div>
+                </>
               ) : (
-                Array(questionCount)
-                  .fill(0)
-                  .map((_, index) => (
-                    <QuestionForm key={`question-form-${index}`} id={index} />
-                  ))
+                <>
+                  <h3>Product Selection Rules</h3>
+                  {Array(ruleCount)
+                    .fill(0)
+                    .map((_, index) => (
+                      <RuleForm
+                        key={`rule-form-${index}`}
+                        id={index}
+                        products={products}
+                      />
+                    ))}
+                  <div className="mt-20">
+                    <button
+                      type="button"
+                      onClick={() => setRuleCount(ruleCount + 1)}
+                      disabled={!isValid}
+                    >
+                      Add Rule
+                    </button>
+                  </div>
+                </>
               )}
 
-              <div className="mt-20">
-                <button
-                  type="button"
-                  onClick={() => setQuestionCount(questionCount + 1)}
-                  disabled={!isValid}
-                >
-                  Add Question
-                </button>
-              </div>
-
               <div className="row mt-20">
-                <button disabled={!isValid} type="submit">
-                  Create
-                </button>
+                {!showRulesPage ? (
+                  <button
+                    disabled={!isValid}
+                    type="button"
+                    onClick={() => onSaveQuestions()}
+                  >
+                    Next
+                  </button>
+                ) : (
+                  <button disabled={!isValid} type="submit">
+                    Create
+                  </button>
+                )}
 
                 <button
                   className="ml-20"

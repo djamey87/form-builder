@@ -68,10 +68,16 @@ enum QuestionType {
   TEXT
 }
 
+enum ConditionType {
+  AND
+  OR
+}
+
 enum ActionType {
-  SHOW_QUESTION
-  HIGHLIGHT
   BLOCK
+  COMPLETE
+  HIGHLIGHT
+  SHOW_QUESTION
 }
 
 model Response {
@@ -93,6 +99,15 @@ model Question {
   formId               String?
 }
 
+model Rule {
+  id                   String       @id @default(cuid())
+  conditionType        ConditionType? 
+  questionResponses    Json       @default("[{}]")
+  presentedProducts    Json       @default("[{}]")
+  Form                 Form?        @relation(fields: [formId], references: [id])
+  formId               String?
+}
+
 model FormMetaData {
   name    String @db.Text
   slug    String @unique @db.Text
@@ -104,5 +119,6 @@ model Form {
   id               String       @id @default(cuid())
   metadata         FormMetaData @relation(fields: [formMetaDataSlug], references: [slug])
   questions        Question[]
+  rules            Rule[]
   formMetaDataSlug String       @unique @db.Text
 }
