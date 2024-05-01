@@ -3,11 +3,14 @@
 import { Product } from "@/app/api/products";
 import { FormData, GenerateForm } from "@/components/GenerateForm";
 import QuestionForm from "@/components/QuestionForm";
-import { questionFormToRequestBody } from "@/utils/questions";
+import {
+  questionFormToRequestBody,
+  ruleFormToRequestBody,
+} from "@/utils/questions";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { ProductSelectionForm, SelectedProduct } from "../ProductSelectionForm";
 import RuleForm from "../RuleForm";
+import { Questionnaire } from "../Questionnaire";
 
 interface Props {
   products: Product[];
@@ -16,7 +19,6 @@ interface Props {
 export function QuestionnaireForm({ products }: Props) {
   const methods = useForm();
   const { handleSubmit, register, setValue, getValues, formState } = methods;
-  // const [selectedProducts, setSelectedProducts] = useState<string[]>([]); // JSON blob
   const [showRulesPage, setShowRulesPage] = useState(false);
 
   const [previewData, setPreviewData] = useState({});
@@ -26,11 +28,13 @@ export function QuestionnaireForm({ products }: Props) {
   const [ruleCount, setRuleCount] = useState(0);
 
   const onPreview = () => {
-    const { questions, ...rest } = getValues();
+    const { questions, rules, ...rest } = getValues();
 
     const questionBody = Object.fromEntries(
       questionFormToRequestBody(questions).map((form) => [form.reference, form])
     );
+
+    ruleFormToRequestBody(rules);
 
     const updatedData = { ...rest, questions: questionBody };
 
@@ -60,21 +64,6 @@ export function QuestionnaireForm({ products }: Props) {
 
   return (
     <>
-      {/* <ProductSelectionForm
-        products={products}
-        onChange={(selected) => setSelectedProducts(selected)}
-      />
-
-      <hr />
-
-      <p>selected products:</p>
-      <ul>
-        {selectedProducts.map((prod) => {
-          const { id, label } = JSON.parse(prod);
-          return <li key={id}>{label}</li>;
-        })}
-      </ul> */}
-
       <FormProvider {...methods}>
         <div className="row">
           <div>
@@ -203,9 +192,7 @@ export function QuestionnaireForm({ products }: Props) {
           </div>
 
           <div className="border ml-20">
-            <h2>Preview</h2>
-
-            <GenerateForm formData={previewData as FormData} />
+            <Questionnaire title="Preview" formData={previewData as FormData} />
           </div>
         </div>
       </FormProvider>

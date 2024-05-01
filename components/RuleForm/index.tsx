@@ -34,34 +34,32 @@ export default function RuleForm({ id, products }: Props) {
           {...methods.register(`${idPrefix}.questionResponses`)}
         >
           <option value="none" label="please select" disabled />
-          {questions.map(({ reference, responses, text, type }) => (
-            <>
-              {type !== "SELECT" ? null : (
-                <optgroup key={reference} label={`${reference} - ${text}`}>
-                  {responses?.length > 0 ? (
-                    <>
-                      {responses.map(({ label, value }) => (
-                        <option
-                          key={`question-${reference}-${value}`}
-                          label={label}
-                          value={JSON.stringify({
-                            questionReference: reference,
-                            response: value,
-                          })}
-                        />
-                      ))}
-                    </>
-                  ) : (
-                    <option value="none" label="please select" disabled />
-                  )}
-                </optgroup>
-              )}
-            </>
-          ))}
+          {questions
+            .filter(({ type }) => type === "SELECT")
+            .map(({ reference, responses, text, type }) => (
+              <optgroup key={reference} label={`${reference} - ${text}`}>
+                {responses?.length > 0 ? (
+                  <>
+                    {responses.map(({ label, value }) => (
+                      <option
+                        key={`question-${reference}-${value}`}
+                        label={label}
+                        value={JSON.stringify({
+                          questionReference: reference,
+                          response: value,
+                        })}
+                      />
+                    ))}
+                  </>
+                ) : (
+                  <option value="none" label="please select" disabled />
+                )}
+              </optgroup>
+            ))}
         </select>
       </div>
 
-      {/* TODO: only if question count > 1 */}
+      {/* TODO: acquire selected options */}
       {responseCount === 1 ? null : (
         <div>
           <label>
@@ -105,7 +103,12 @@ export default function RuleForm({ id, products }: Props) {
                   ))}
                 </>
               ) : (
-                <option value="none" label="please select" disabled />
+                <option
+                  key={`product-${item_id}-none`}
+                  value="none"
+                  label="please select"
+                  disabled
+                />
               )}
             </optgroup>
           ))}

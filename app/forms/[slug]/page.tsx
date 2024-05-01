@@ -1,4 +1,6 @@
 import { GenerateForm } from "@/components/GenerateForm";
+import { ProductSelector } from "@/components/ProductSelector";
+import { Questionnaire } from "@/components/Questionnaire";
 import { prisma } from "@/lib/prisma";
 
 interface Props {
@@ -28,11 +30,9 @@ export default async function Page({ params }: Props) {
   };
 
   return (
-    <div>
-      <h1>
-        {form.metadata.name} v{form.metadata.version}
-      </h1>
-      <GenerateForm formData={formData} />
-    </div>
+    <Questionnaire
+      title={`${form.metadata.name} v${form.metadata.version}`}
+      formData={formData}
+    />
   );
 }

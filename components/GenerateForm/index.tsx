@@ -13,14 +13,8 @@ export type FormData = Form & {
 
 interface Props {
   formData: FormData;
+  onComplete: () => void;
 }
-
-// enum SelectedActions {
-//   showQuestion = "showQuestion",
-//   showPrompt = "showPrompt",
-//   highlight = "highlight",
-//   block = "block",
-// }
 
 function determineAction(
   actions: Actions,
@@ -35,7 +29,6 @@ function determineAction(
   }
   // TODO: understand action
   const { type, target } = foundAction;
-  // const action = rawAction as ActionType;
 
   return [type, target];
 }
@@ -45,7 +38,10 @@ function determineAction(
 // [x] only show current question? - might be problematic for returning customers
 // [-] track state via url - will help with GA tracking (or by section)
 // [x] on selection understand next action (show question / prompt / block / finish)
-export function GenerateForm({ formData }: Props) {
+// [-] utilise form state management, for easier submission parsing?
+// [-] trigger product selector
+export function GenerateForm({ formData, onComplete }: Props) {
+  // TODO: ensure the format of the id's are consistent
   const [currentQuestionId, setCurrentQuestionId] = useState("Q1");
   const { questions } = formData;
 
@@ -66,18 +62,24 @@ export function GenerateForm({ formData }: Props) {
       selectedValue
     );
 
+    console.log(":handleSelection:", action);
+
     switch (action) {
       case ActionType.SHOW_QUESTION:
-        setCurrentQuestionId(target);
-        break;
+        return setCurrentQuestionId(target);
       case ActionType.BLOCK:
-        alert("You shall not pass! - user blocked");
-        // reset form?
-        break;
+        // TODO: should still be able to continue the questionnaire
+        return alert("You shall not pass! - user blocked");
       case ActionType.HIGHLIGHT:
-        console.warn("");
-      // TODO: highlight shiz & get next question
-      // setCurrentQuestionId(target);
+        // TODO: highlight shiz & get next question
+        // setCurrentQuestionId(target);
+        return console.warn("HIGHLIGHT INFO NEEDED");
+      case ActionType.COMPLETE:
+        console.log("form completed");
+        // TODO:
+        // - show the product selector
+        // - pass the response selection?
+        return onComplete();
       default:
         throw new Error("no action handler implemented");
     }
