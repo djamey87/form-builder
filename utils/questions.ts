@@ -8,7 +8,7 @@ interface Actions {
 }
 
 export const questionFormToRequestBody = (questionData: any[]): Question[] => {
-  return questionData.map(({ responses, type, ...rest }) => {
+  return questionData.map(({ reference, responses, type, ...rest }) => {
     let body = rest;
     if (responses) {
       const actionsBody: Actions = {};
@@ -32,6 +32,7 @@ export const questionFormToRequestBody = (questionData: any[]): Question[] => {
 
       body = {
         ...body,
+        reference: reference.replace(".", "_"),
         questionType: type,
         responses: responsesBody,
         responseValueActions: actionsBody,

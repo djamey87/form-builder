@@ -19,11 +19,11 @@ export function Questionnaire({ title, formData }: Props) {
       <h1>{title}</h1>
       {!formCompleted ? (
         <GenerateForm
-          formData={formData}
+          formSchema={formData}
           onComplete={() => setFormCompleted(true)}
         />
       ) : (
-        <ProductSelector />
+        <ProductSelector formSchema={formData} />
       )}
     </div>
   );

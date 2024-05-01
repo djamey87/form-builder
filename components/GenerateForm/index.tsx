@@ -4,6 +4,7 @@ import { ActionType, Actions } from "@/app/api/forms/route";
 import { useState } from "react";
 import styles from "./index.module.css";
 import { Form, Question, QuestionType, Response } from "@prisma/client";
+import { useForm } from "react-hook-form";
 
 type QuestionData = Question & { responses: Response[] };
 
@@ -12,7 +13,7 @@ export type FormData = Form & {
 };
 
 interface Props {
-  formData: FormData;
+  formSchema: FormData;
   onComplete: () => void;
 }
 
@@ -40,10 +41,11 @@ function determineAction(
 // [x] on selection understand next action (show question / prompt / block / finish)
 // [-] utilise form state management, for easier submission parsing?
 // [-] trigger product selector
-export function GenerateForm({ formData, onComplete }: Props) {
+export function GenerateForm({ formSchema, onComplete }: Props) {
+  const { handleSubmit, register } = useForm();
   // TODO: ensure the format of the id's are consistent
   const [currentQuestionId, setCurrentQuestionId] = useState("Q1");
-  const { questions } = formData;
+  const { questions } = formSchema;
 
   if (!questions) {
     return <p>Please add question information</p>;
@@ -56,13 +58,16 @@ export function GenerateForm({ formData, onComplete }: Props) {
     console.warn("no question data found for " + currentQuestionId);
   }
 
+  const onFormSubmit = handleSubmit(async (data) => {
+    // const { questions, ...rest } = data;
+    console.log("submit", data);
+  });
+
   const handleSelection = (selectedValue: string = "default") => {
     const [action, target] = determineAction(
       question.responseValueActions,
       selectedValue
     );
-
-    console.log(":handleSelection:", action);
 
     switch (action) {
       case ActionType.SHOW_QUESTION:
@@ -86,38 +91,45 @@ export function GenerateForm({ formData, onComplete }: Props) {
   };
 
   return (
-    <form>
+    <form onSubmit={onFormSubmit}>
       {Object.values(questions).map(({ reference, text, ...rest }) => {
         return (
           <div
             key={`question-${reference}`}
             className={reference !== currentQuestionId ? styles.hide : ""}
           >
-            <label htmlFor={reference}>{`${reference}. ${text}`}</label>
+            <label>
+              {`${reference}. ${text}`}
 
-            {rest.questionType === QuestionType.SELECT && (
-              <select
-                id={reference}
-                defaultValue="placeholder"
-                onChange={(e) => handleSelection(e.target.value)}
-                required
-              >
-                <option disabled label="Please select" value="placeholder" />
-                {Object.values(rest.responses).map(({ label, value }) => {
-                  return (
-                    <option
-                      key={`response-${reference}-${value}`}
-                      value={value}
-                      label={label}
-                    />
-                  );
-                })}
-              </select>
-            )}
+              {rest.questionType === QuestionType.SELECT && (
+                <select
+                  {...register(`questions.${reference}.answer`, {
+                    required: true,
+                  })}
+                  // defaultValue="placeholder"
+                  onChange={(e) => handleSelection(e.target.value)}
+                >
+                  <option disabled label="Please select" value="placeholder" />
+                  {Object.values(rest.responses).map(({ label, value }) => {
+                    return (
+                      <option
+                        key={`response-${reference}-${value}`}
+                        value={value}
+                        label={label}
+                      />
+                    );
+                  })}
+                </select>
+              )}
+            </label>
 
             {rest.questionType === QuestionType.TEXT && (
               <div>
-                <input required type="text" id={reference} minLength={3} />
+                <input
+                  {...register(`questions.${reference}.answer`)}
+                  type="text"
+                  minLength={3}
+                />
                 <button type="button" onClick={() => handleSelection()}>
                   OK
                 </button>
@@ -126,6 +138,8 @@ export function GenerateForm({ formData, onComplete }: Props) {
           </div>
         );
       })}
+
+      <button type="submit">Test Submit</button>
     </form>
   );
 }
