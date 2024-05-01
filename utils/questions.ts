@@ -23,6 +23,8 @@ export const questionFormToRequestBody = (questionData: any[]): Question[] => {
           action: { type: string; target: string };
         }) => {
           if (action) {
+            if (action.target)
+              action = { ...action, target: action.target.replace(".", "_") };
             actionsBody[value || "default"] = action;
           }
 
