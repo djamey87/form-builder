@@ -46,35 +46,23 @@ export const questionFormToRequestBody = (questionData: any[]): Question[] => {
 
 export const ruleFormToRequestBody = (ruleData: any[]): Rule[] => {
   console.log("incoming rules structure", ruleData);
-  // return ruleData.map(({ responses, type, ...rest }) => {
-  //   let body = rest;
-  //   if (responses) {
-  //     const actionsBody: Actions = {};
-  //     const responsesBody = responses.map(
-  //       ({
-  //         value,
-  //         label,
-  //         action,
-  //       }: {
-  //         value: string;
-  //         label: string;
-  //         action: { type: string; target: string };
-  //       }) => {
-  //         if (action) {
-  //           actionsBody[value || "default"] = action;
-  //         }
+  // console.log(
+  //   "incoming rules structure TEST",
+  //   JSON.parse(ruleData[0].presentedProducts[0]).id
+  // );
 
-  //         return { value, label };
-  //       }
-  //     );
+  const parsedShiz = ruleData.map(
+    ({ presentedProducts, questionResponses, ...rest }) => ({
+      ...rest,
+      presentedProducts: presentedProducts.map((jObj: string) =>
+        JSON.parse(jObj)
+      ),
+      questionResponses: questionResponses.map((jObj: string) =>
+        JSON.parse(jObj)
+      ),
+    })
+  );
+  console.log("outgoing rules structure", ruleData);
 
-  //     body = {
-  //       ...body,
-  //       questionType: type,
-  //       responses: responsesBody,
-  //       responseValueActions: actionsBody,
-  //     };
-  //   }
-  //   return body;
-  // });
+  return parsedShiz;
 };

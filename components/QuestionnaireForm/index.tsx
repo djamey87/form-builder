@@ -34,17 +34,16 @@ export function QuestionnaireForm({ products }: Props) {
       questionFormToRequestBody(questions).map((form) => [form.reference, form])
     );
 
-    ruleFormToRequestBody(rules);
+    console.log("test parsing", questionBody, rules);
 
-    const updatedData = { ...rest, questions: questionBody };
+    const ruleBody = rules ? ruleFormToRequestBody(rules) : undefined;
+
+    const updatedData = { ...rest, questions: questionBody, rules: ruleBody };
 
     setPreviewData(updatedData);
   };
 
   const onSaveQuestions = handleSubmit(async (data) => {
-    // const { questions, ...rest } = data;
-
-    // const questionBody = questionFormToRequestBody(questions);
     onPreview();
     setShowRulesPage(true);
     console.log(showRulesPage);

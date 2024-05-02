@@ -12,11 +12,9 @@ interface Props {
 export default function RuleForm({ id, products }: Props) {
   const methods = useFormContext();
 
-  const { watch, getValues } = methods;
+  const { getValues } = methods;
   const idPrefix = `rules.${id}`;
   const { questions } = getValues();
-
-  console.log("questions", questions);
 
   const [responseCount, setResponseCount] = useState(1);
 

@@ -8,22 +8,35 @@ export type Props = {
   formData: FormData;
 };
 
+export type PatientResponses = {
+  questions: {
+    [key: string]: { answer: string };
+  };
+};
+
 // TODO:
-// [-] conditional render of the product selector
-// [-] responses to be passed to the prod selector
+// [x] conditional render of the product selector
+// [x] responses to be passed to the prod selector
 export function Questionnaire({ title, formData }: Props) {
-  const [formCompleted, setFormCompleted] = useState(false);
+  const [patientResponses, setPatientResponses] = useState<PatientResponses>();
+
+  console.log(patientResponses);
 
   return (
     <div>
       <h1>{title}</h1>
-      {!formCompleted ? (
+      {!patientResponses ? (
         <GenerateForm
           formSchema={formData}
-          onComplete={() => setFormCompleted(true)}
+          onComplete={(responses: PatientResponses) =>
+            setPatientResponses(responses)
+          }
         />
       ) : (
-        <ProductSelector formSchema={formData} />
+        <ProductSelector
+          formSchema={formData}
+          patientResponses={patientResponses}
+        />
       )}
     </div>
   );

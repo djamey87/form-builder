@@ -3,18 +3,24 @@
 import { ActionType, Actions } from "@/app/api/forms/route";
 import { useState } from "react";
 import styles from "./index.module.css";
-import { Form, Question, QuestionType, Response } from "@prisma/client";
+import { Form, Question, QuestionType, Response, Rule } from "@prisma/client";
 import { useForm } from "react-hook-form";
+import { PatientResponses } from "../Questionnaire";
 
 type QuestionData = Question & { responses: Response[] };
+type RuleData = Pick<Rule, "conditionType"> & {
+  questionResponses: { questionReference: string; response: string }[];
+  presentedProducts: { id: string; label: string }[];
+};
 
 export type FormData = Form & {
   questions: { [key: string]: QuestionData };
+  rules: RuleData[];
 };
 
 interface Props {
   formSchema: FormData;
-  onComplete: () => void;
+  onComplete: (patientResponses: PatientResponses) => void;
 }
 
 function determineAction(
@@ -42,7 +48,7 @@ function determineAction(
 // [-] utilise form state management, for easier submission parsing?
 // [-] trigger product selector
 export function GenerateForm({ formSchema, onComplete }: Props) {
-  const { handleSubmit, register } = useForm();
+  const { handleSubmit, register, getValues } = useForm();
   // TODO: ensure the format of the id's are consistent
   const [currentQuestionId, setCurrentQuestionId] = useState("Q1");
   const { questions } = formSchema;
@@ -68,23 +74,26 @@ export function GenerateForm({ formSchema, onComplete }: Props) {
       question.responseValueActions,
       selectedValue
     );
+    console.log("handleSelection", action);
 
     switch (action) {
       case ActionType.SHOW_QUESTION:
-        return setCurrentQuestionId(target);
+        setCurrentQuestionId(target);
+        break;
       case ActionType.BLOCK:
         // TODO: should still be able to continue the questionnaire
-        return alert("You shall not pass! - user blocked");
+        alert("You shall not pass! - user blocked");
+        break;
       case ActionType.HIGHLIGHT:
         // TODO: highlight shiz & get next question
         // setCurrentQuestionId(target);
-        return console.warn("HIGHLIGHT INFO NEEDED");
+        console.warn("HIGHLIGHT INFO NEEDED");
+        break;
       case ActionType.COMPLETE:
-        console.log("form completed");
+        console.log("form completed", getValues());
         // TODO:
-        // - show the product selector
-        // - pass the response selection?
-        return onComplete();
+        // [-] pass the response selection
+        return onComplete(getValues() as PatientResponses);
       default:
         throw new Error("no action handler implemented");
     }
